@@ -30,7 +30,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
         with:
           files: build/windows/runner/Release/videoConverter-${{github.ref_name}}-windows.zip
 
@@ -61,6 +61,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
         with:
           files: build/macos/Build/Products/Release/videoConverter-${{github.ref_name}}-macos.zip
