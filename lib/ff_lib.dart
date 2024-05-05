@@ -13,12 +13,6 @@ final homeDir = Platform.environment['HOME'] ?? "";
 /// This function takes a [path] as input and returns a new formatted path.
 /// The conversion logic is not specified in this function and should be implemented separately.
 ///
-/// Example:
-/// ```dart
-/// String path = '/Users/yohei/Git/IBC/ibc_video/lib/ff_lib.dart';
-/// String convertedPath = convertPath(path);
-/// print(convertedPath); // Output: '/Users/yohei/Git/IBC/ibc_video/lib/ff_lib.dart'
-/// ```
 String convertPath(String path) {
   final index = path.indexOf(homeDir);
 
@@ -50,7 +44,7 @@ Future<void> ffmpegExe(List<FfmpegCommand> command) async {
 /// ```
 ///
 /// Throws an error if there is an issue with the execution.
-Future<void> ffmpegMain(
+Future<int> ffmpegMain(
     int execType, String filePath, String fileExtention) async {
   int width = 0;
   int height = 0;
@@ -70,6 +64,11 @@ Future<void> ffmpegMain(
 
   if (outputFilePath.endsWith('.')) {
     outputFilePath = outputFilePath.substring(0, outputFilePath.length - 1);
+  }
+
+  // Add quotes to output file path (Video -> mp3 only)
+  if ([2, 3].contains(execType) && outputFilePath.contains(' ')) {
+    return 1;
   }
 
   // Constract FfmpegCommand And Run
@@ -108,8 +107,8 @@ Future<void> ffmpegMain(
         inputs: [FfmpegInput.asset(inputFilePath)],
         args: [
           CliArg(name: 'y', value: null),
-          CliArg(name: 'acodec', value: 'libmp3lame'),
-          CliArg(name: 'ab', value: '256k'),
+          // CliArg(name: 'acodec', value: 'libmp3lame'),
+          // CliArg(name: 'ab', value: '256k'),
         ],
         outputFilepath: outputFilePath,
       )
@@ -148,5 +147,5 @@ Future<void> ffmpegMain(
       )
     ]);
   }
-  return;
+  return 0;
 }

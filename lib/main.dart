@@ -74,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _isConverting = true; // Start converting
       });
       for (int i = 0; i < filePath.length; i++) {
-        await ffmpegMain(
+        int code = await ffmpegMain(
           _target,
           p.relative(
             filePath[i],
@@ -82,22 +82,39 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           _fileType[_target][2] as String,
         );
+        if (code == 1) {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Center(
+                    child: Text('ファイル名, パスに空白は利用できません\n空白を削除してからもう一度お試しください',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                        )),
+                  ),
+                );
+              });
+          break;
+        } else {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                    title: Center(
+                  child: Text('変換が完了しました!',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                      )),
+                ));
+              });
+        }
       }
       setState(() {
         _isConverting = false; // Stop converting
       });
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-                title: Center(
-              child: Text('変換が完了しました!',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                  )),
-            ));
-          });
     } else {
       // User canceled the picker
     }
@@ -181,6 +198,14 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+                Center(
+                  child: Text('変換中...',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          height: 2.0,
+                          decoration: TextDecoration.none)),
+                )
               ],
             ),
           );
