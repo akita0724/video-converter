@@ -24,7 +24,7 @@ jobs:
         uses: thedoctor0/zip-release@master
         with:
           type: "zip"
-          filename: release-windows.zip
+          filename: release-windows-${{github.ref_name}}.zip
           directory: build/windows/x64/runner/Release
       - name: Windows Release
         uses: softprops/action-gh-release@v2
