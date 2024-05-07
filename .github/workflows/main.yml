@@ -21,47 +21,14 @@ jobs:
       - name: Build artifacts
         run: flutter build windows --release
       - name: Archive Release
-        uses: thedoctor0/zip-release@master
-        with:
-          type: "zip"
-          filename: videoConverter-${{github.ref_name}}-windows.zip
-          directory: build/windows/runner/Release
-      - name: Windows Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
-        with:
-          files: build/windows/runner/Release/videoConverter-${{github.ref_name}}-windows.zip
+        run: |
+          cp -r build\windows\x64\runner\Release\ibc_video.exe ibc_video.exe
+          zip -r release-windows.zip ibc_video.exe
 
-  build-and-release-macos:
-    runs-on: macos-latest
-    env:
-      RUNNER_OS: macos
-    steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: "stable"
-          flutter-version: "2.10.0"
-      - name: Install project dependencies
-        run: flutter pub get
-      - name: Generate intermediates
-        run: flutter pub run build_runner build --delete-conflicting-outputs
-      - name: Enable macOS build
-        run: flutter config --enable-macos-desktop
-      - name: Build artifacts
-        run: flutter build macos --release
-      - name: Archive Release
-        uses: thedoctor0/zip-release@master
-        with:
-          type: "zip"
-          filename: videoConverter-${{github.ref_name}}-macos.zip
-          directory: build/macos/Build/Products/Release
-      - name: macOS Release
-        uses: softprops/action-gh-release@v1
+      - name: Windows Release
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
         with:
-          files: build/macos/Build/Products/Release/videoConverter-${{github.ref_name}}-macos.zip
+          files: ./release-windows.zip
