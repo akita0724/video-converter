@@ -21,9 +21,11 @@ jobs:
       - name: Build artifacts
         run: flutter build windows --release
       - name: Archive Release
-        run: |
-          cp -r build\windows\x64\runner\Release\ibc_video.exe ibc_video.exe
-          zip -r release-windows.zip ibc_video.exe
+        uses: thedoctor0/zip-release@master
+        with:
+          type: "zip"
+          filename: release-windows.zip
+          directory: build/windows/x64/runner/Release
 
       - name: Windows Release
         uses: softprops/action-gh-release@v2
