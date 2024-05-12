@@ -6,7 +6,8 @@ import 'dart:io';
 import 'package:ffmpeg_cli/ffmpeg_cli.dart';
 
 // Get home directory
-final homeDir = Platform.environment['HOME'] ?? "";
+final homeDir =
+    Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'] ?? "";
 
 /// Converts the given [path] to a new format.
 ///
