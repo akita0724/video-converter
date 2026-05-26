@@ -59,7 +59,8 @@ git push origin v1.2.3
 これで `release-windows-v1.2.3.zip` と `release-macos-v1.2.3.zip` が
 [GitHub Releases](../../releases) に添付されます。
 
-リポジトリ Secret に `CI_TOKEN` (リポジトリ書き込み権限付き PAT) が必要です。
+ワークフローは自動付与の `GITHUB_TOKEN` + `permissions: contents: write` で
+リリースを作成するので、追加の Secret 設定は不要です。
 
 ## ハードウェアエンコーディング
 
