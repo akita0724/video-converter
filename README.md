@@ -25,9 +25,14 @@ windows/ffmpeg/LICENSE.txt
 
 `.github/workflows/main.yml` 内で release-essentials zip を自動的に取得します。
 
-### macOS / Linux
+### macOS
 
-PATH 上の `ffmpeg` / `ffprobe` を利用します (`brew install ffmpeg` 等)。
+ローカル開発時は PATH 上の `ffmpeg` / `ffprobe` (`brew install ffmpeg`) を利用します。
+CI ビルドの `.app` には evermeet.cx の static ビルドが `Contents/MacOS/` に同梱されます。
+
+### Linux
+
+PATH 上の `ffmpeg` / `ffprobe` を利用します。
 
 ## Getting Started
 

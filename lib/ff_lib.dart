@@ -8,7 +8,10 @@ enum HwEncoder { nvenc, qsv, amf, none }
 
 String _resolveFfBinary(String name) {
   final exeName = Platform.isWindows ? '$name.exe' : name;
-  if (Platform.isWindows) {
+  if (Platform.isWindows || Platform.isMacOS) {
+    // On Windows the runner exe lives directly with the bundled binaries.
+    // On macOS Platform.resolvedExecutable is Foo.app/Contents/MacOS/Foo, so
+    // the binary sits next to it inside Contents/MacOS/.
     final bundled = p.join(p.dirname(Platform.resolvedExecutable), exeName);
     if (File(bundled).existsSync()) return bundled;
   }
