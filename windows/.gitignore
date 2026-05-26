@@ -1,5 +1,8 @@
 flutter/ephemeral/
 
+# Bundled ffmpeg binaries are fetched at build time (CI or local), not committed.
+ffmpeg/
+
 # Visual Studio user-specific files.
 *.suo
 *.user

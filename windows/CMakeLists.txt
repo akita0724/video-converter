@@ -106,3 +106,19 @@ install(DIRECTORY "${PROJECT_BUILD_DIR}/${FLUTTER_ASSET_DIR_NAME}"
 install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
   CONFIGURATIONS Profile;Release
   COMPONENT Runtime)
+
+# Bundle ffmpeg.exe / ffprobe.exe next to the runner so the app can find them
+# via Platform.resolvedExecutable. Binaries are expected to be placed under
+# windows/ffmpeg/bin/ before building (see README and CI workflow).
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg/bin")
+  install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg/bin/"
+    DESTINATION "${CMAKE_INSTALL_PREFIX}"
+    COMPONENT Runtime
+    FILES_MATCHING PATTERN "*.exe" PATTERN "*.dll")
+endif()
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg/LICENSE.txt")
+  install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg/LICENSE.txt"
+    DESTINATION "${CMAKE_INSTALL_PREFIX}"
+    RENAME "FFMPEG_LICENSE.txt"
+    COMPONENT Runtime)
+endif()

@@ -2,15 +2,36 @@
 
 Convert video or audio file into mp4, mp3, mpg.
 
-## Getting Started
+H.264 出力時は NVENC / Intel QSV / AMD AMF を自動検出してハードウェアエンコードを利用します。
+利用できない場合は `libx264` (mp4) / `mpeg2video` (DVD) に自動でフォールバックします。
 
-This project is a starting point for a Flutter application.
+## ffmpeg バイナリの配置
+
+本アプリは `ffmpeg.exe` / `ffprobe.exe` を実行ファイルと同階層から探します。
+
+### Windows ローカルビルド
+
+[gyan.dev の ffmpeg release-essentials](https://www.gyan.dev/ffmpeg/builds/) を解凍し、
+
+```
+windows/ffmpeg/bin/ffmpeg.exe
+windows/ffmpeg/bin/ffprobe.exe
+windows/ffmpeg/LICENSE.txt
+```
+
+の位置に配置してから `flutter build windows` を実行してください。CMake が `install` 時に `runner` の出力ディレクトリへコピーします。
+
+### CI
+
+`.github/workflows/main.yml` 内で release-essentials zip を自動的に取得します。
+
+### macOS / Linux
+
+PATH 上の `ffmpeg` / `ffprobe` を利用します (`brew install ffmpeg` 等)。
+
+## Getting Started
 
 A few resources to get you started if this is your first Flutter project:
 
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

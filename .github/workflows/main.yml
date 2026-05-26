@@ -12,6 +12,16 @@ jobs:
         with:
           channel: "stable"
           flutter-version: "3.19.2"
+      - name: Download ffmpeg (gyan.dev release-essentials, LGPL)
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile ffmpeg.zip
+          Expand-Archive ffmpeg.zip -DestinationPath ffmpeg-tmp
+          $src = (Get-ChildItem ffmpeg-tmp -Directory)[0].FullName
+          New-Item -ItemType Directory -Force windows/ffmpeg/bin | Out-Null
+          Copy-Item "$src/bin/ffmpeg.exe"  windows/ffmpeg/bin/
+          Copy-Item "$src/bin/ffprobe.exe" windows/ffmpeg/bin/
+          Copy-Item "$src/LICENSE"         windows/ffmpeg/LICENSE.txt
       - name: Install project dependencies
         run: flutter pub get
       - name: Generate intermediates
