@@ -3,7 +3,7 @@ name: Flutter CI
 on: push
 
 env:
-  FLUTTER_VERSION: "3.19.2"
+  FLUTTER_VERSION: "3.44.0"
 
 jobs:
   build-and-release-windows:
