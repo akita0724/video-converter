@@ -79,4 +79,6 @@ ffprobe 取得の総再生時間で割って算出しています。
 
 - **Windows ビルドが `win32` の `UnmodifiableUint8ListView` エラーで落ちる**: 古い transitive 依存。`flutter pub upgrade` で `win32 >= 5.15.0` に上げる。
 - **macOS で `xcrun: error: unable to find utility "xcodebuild"`**: `xcode-select -p` が `/Library/Developer/CommandLineTools` を指している。上記の `sudo xcode-select -s ...` で切替。
-- **`.app` を開こうとして「開発元を確認できないため開けません」**: 非署名のため。Finder で右クリック→開く で初回ダイアログを承認。CI 産出物は `xattr -dr com.apple.quarantine` で quarantine 属性を剥がしているのでクリーンに開きます。
+- **`.app` を開こうとして「壊れているためゴミ箱に入れる必要があります」**: 同梱バイナリ追加後に再署名されていない (= ad-hoc 署名のカバレッジが崩れている)。CI では evermeet.cx + osxexperts.net から取得した universal ffmpeg/ffprobe を `Contents/MacOS/` に入れた後、`codesign --force --sign -` で子→親順に再署名している。手元で `.app` をいじった場合は同手順で再署名すれば回復する。
+- **`.app` を開こうとして「開発元を確認できないため開けません」**: ad-hoc 署名 + quarantine 属性付きの状態 (= GitHub からダウンロードして展開した直後)。macOS Sequoia 以降は右クリック→開く では承認できないため、**システム設定 → プライバシーとセキュリティ → 「このまま開く」** を踏む。
+- **`.app` 起動時に「Intel サポート終了」警告が出る**: 同梱した ffmpeg/ffprobe が x86_64 のみで、Apple Silicon 上で Rosetta 経由で動いている。CI では `lipo -create` で Intel と ARM64 を結合した universal バイナリを同梱しているのでこの警告は出ないはず。出る場合はバイナリのアーキを `file <binary>` で確認。

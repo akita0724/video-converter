@@ -61,21 +61,44 @@ jobs:
         run: flutter config --enable-macos-desktop
       - name: Build artifacts
         run: flutter build macos --release
-      - name: Bundle ffmpeg (evermeet.cx static, GPL)
+      - name: Bundle universal ffmpeg/ffprobe and ad-hoc re-sign
         run: |
           set -euo pipefail
           APP_DIR=$(ls -d build/macos/Build/Products/Release/*.app | head -n1)
           MACOS_DIR="$APP_DIR/Contents/MacOS"
-          curl -fL https://evermeet.cx/ffmpeg/getrelease/zip  -o ffmpeg.zip
-          curl -fL https://evermeet.cx/ffmpeg/getrelease/ffprobe/zip -o ffprobe.zip
-          unzip -o ffmpeg.zip  -d ffmpeg-tmp
-          unzip -o ffprobe.zip -d ffprobe-tmp
-          cp ffmpeg-tmp/ffmpeg   "$MACOS_DIR/ffmpeg"
-          cp ffprobe-tmp/ffprobe "$MACOS_DIR/ffprobe"
+
+          # Intel x86_64 (evermeet.cx) + ARM64 (osxexperts.net) → lipo universal
+          # so the bundle works natively on both architectures without Rosetta
+          # and without triggering the "Intel support is ending" warning.
+          mkdir -p ff/intel ff/arm ff/universal
+          curl -fsSL https://evermeet.cx/ffmpeg/getrelease/zip          -o ff/ffmpeg-intel.zip
+          curl -fsSL https://evermeet.cx/ffmpeg/getrelease/ffprobe/zip  -o ff/ffprobe-intel.zip
+          curl -fsSL https://www.osxexperts.net/ffmpeg81arm.zip          -o ff/ffmpeg-arm.zip
+          curl -fsSL https://www.osxexperts.net/ffprobe81arm.zip         -o ff/ffprobe-arm.zip
+          unzip -oq ff/ffmpeg-intel.zip  -d ff/intel
+          unzip -oq ff/ffprobe-intel.zip -d ff/intel
+          unzip -oq ff/ffmpeg-arm.zip    -d ff/arm
+          unzip -oq ff/ffprobe-arm.zip   -d ff/arm
+          lipo -create -output ff/universal/ffmpeg \
+            "$(find ff/intel -name ffmpeg  -type f | head -n1)" \
+            "$(find ff/arm   -name ffmpeg  -type f | head -n1)"
+          lipo -create -output ff/universal/ffprobe \
+            "$(find ff/intel -name ffprobe -type f | head -n1)" \
+            "$(find ff/arm   -name ffprobe -type f | head -n1)"
+
+          cp ff/universal/ffmpeg  "$MACOS_DIR/ffmpeg"
+          cp ff/universal/ffprobe "$MACOS_DIR/ffprobe"
           chmod +x "$MACOS_DIR/ffmpeg" "$MACOS_DIR/ffprobe"
-          # Strip Apple quarantine xattr from downloaded binaries so the
-          # produced .app is usable without Gatekeeper override on first run.
           xattr -dr com.apple.quarantine "$APP_DIR" || true
+
+          # Re-sign so the bundle's ad-hoc signature covers the newly-added
+          # helpers. Inner-out: helpers first, then the whole .app.
+          codesign --force --sign - --timestamp=none "$MACOS_DIR/ffmpeg"
+          codesign --force --sign - --timestamp=none "$MACOS_DIR/ffprobe"
+          codesign --force --deep --sign - --timestamp=none \
+            --entitlements macos/Runner/Release.entitlements \
+            "$APP_DIR"
+          codesign --verify --deep --strict --verbose=2 "$APP_DIR"
       - name: Archive Release
         run: |
           set -euo pipefail

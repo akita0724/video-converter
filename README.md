@@ -34,6 +34,18 @@ CI ビルドの `.app` には evermeet.cx の static ビルドが `Contents/MacO
 
 PATH 上の `ffmpeg` / `ffprobe` を利用します。
 
+## macOS で初回起動できない場合
+
+配布版の `.app` は Apple Developer ID で署名・公証されていない (ad-hoc 署名) ため、
+GitHub からダウンロードしてダブルクリックすると Gatekeeper にブロックされます。
+
+1. ダブルクリックして表示されるダイアログは **キャンセル**
+2. **システム設定 → プライバシーとセキュリティ** を開く
+3. 下の方にブロックされた `へんかんくん` の項目が出ているので **このまま開く** をクリック
+4. パスワードを入力 → 再度ダブルクリックで起動
+
+これで以降は普通に起動できます。
+
 ## Getting Started
 
 A few resources to get you started if this is your first Flutter project:
